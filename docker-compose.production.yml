@@ -1,0 +1,41 @@
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  db:
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: ./backend
+    image: abubakr2703/foodgram_backend:latest
+    env_file: .env
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    depends_on:
+      - db
+    restart: always
+
+  frontend:
+    build: ./frontend
+    image: abubakr2703/foodgram_frontend:latest
+    restart: always
+
+  nginx:
+    build: ./infra
+    image: abubakr2703/foodgram_nginx:latest
+    ports:
+      - "9000:80"
+    volumes:
+      - static:/static
+      - media:/media
+    depends_on:
+      - backend
+      - frontend
+    restart: always
