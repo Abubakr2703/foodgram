@@ -51,7 +51,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly
+    ]
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -129,7 +131,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if not deleted:
                 return Response({'detail': 'Рецепт не в корзине'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_204_NO_CONTENT)      
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'], url_path='get-link')
     def get_link(self, request, pk=None):
@@ -144,15 +146,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         user = request.user
-        cart_items = ShoppingCart.objects.filter(user=user).select_related('recipe')
+        cart_items = ShoppingCart.objects.filter(
+            user=user).select_related('recipe')
         ingredients = {}
         for cart in cart_items:
             for ri in cart.recipe.recipe_ingredients.all():
-                key = f"{ri.ingredient.name} ({ri.ingredient.measurement_unit})"
+                key = f'{ri.ingredient.name}({ri.ingredient.measurement_unit})'
                 ingredients[key] = ingredients.get(key, 0) + ri.amount
-        lines = ['Список покупок:\n'] + [f"- {name} — {amount}" for name, amount in ingredients.items()]
+        lines = ['Список покупок:\n'] + [
+            f"- {name} — {amount}" for name, amount in ingredients.items()]
         response = Response('\n'.join(lines), content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        response['Content-Disposition'] = 'attachment;'
+        'filename="shopping_list.txt"'
         return response
 
 
