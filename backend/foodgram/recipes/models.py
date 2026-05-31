@@ -1,13 +1,9 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
+from django.db import models
 
-from .constants import (
-    NAME_LENGTH,
-    IMAGE_UPLOAD_PATH,
-    SLUG_MAX_LEGTH,
-    MAX_MEASUREMENT_LENGTH
-)
+from .constants import (IMAGE_UPLOAD_PATH, MAX_MEASUREMENT_LENGTH, NAME_LENGTH,
+                        SLUG_MAX_LEGTH)
 
 User = get_user_model()
 
@@ -68,6 +64,7 @@ class Recipe(models.Model):
         verbose_name='Текстовое описание'
     )
     cooking_time = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1)],
         verbose_name="Время приготовления",
         help_text="Время приготовления блюда (в минутах).",
     )

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
-from .views import TagViewSet, IngredientViewSet, RecipeViewSet, UserViewSet
 
+from .views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
 
 router = DefaultRouter()
 router.register('tags', TagViewSet)

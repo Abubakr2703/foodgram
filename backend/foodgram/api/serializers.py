@@ -1,20 +1,9 @@
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-
-from django.contrib.auth import get_user_model
-
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscription, Tag)
 from rest_framework import serializers
-
-from recipes.models import (
-    RecipeIngredient,
-    Recipe,
-    Tag,
-    Ingredient,
-    Subscription,
-    Favorite,
-    ShoppingCart
-)
-
-User = get_user_model()
+from users.models import User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -169,38 +158,41 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         fields = (
             'name', 'text', 'cooking_time', 'image', 'tags', 'ingredients')
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        validated_data['author'] = self.context['request'].user
-        recipe = Recipe.objects.create(**validated_data)
+    def _save_tags_and_ingredients(self, recipe, tags, ingredients):
+        """Устанавливает теги и создаёт ингредиенты через bulk_create."""
         recipe.tags.set(tags)
-        for ing_data in ingredients:
-            RecipeIngredient.objects.create(
+        ingredient_objs = [
+            RecipeIngredient(
                 recipe=recipe,
                 ingredient=ing_data['ingredient'],
                 amount=ing_data['amount']
             )
+            for ing_data in ingredients
+        ]
+        RecipeIngredient.objects.bulk_create(ingredient_objs)
+
+    @transaction.atomic
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        validated_data['author'] = self.context['request'].user
+
+        recipe = Recipe.objects.create(**validated_data)
+        self._save_tags_and_ingredients(recipe, tags, ingredients)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags', None)
-        ingredients = validated_data.pop('ingredients', None)
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time)
-        if 'image' in validated_data:
-            instance.image = validated_data['image']
-        instance.save()
-        if tags is not None:
+        instance = super().update(instance, validated_data)
+
+        if 'tags' in validated_data:
+            tags = validated_data.pop('tags')
             instance.tags.set(tags)
-        if ingredients is not None:
+
+        if 'ingredients' in validated_data:
+            ingredients = validated_data.pop('ingredients')
+
             instance.recipe_ingredients.all().delete()
-            for ing_data in ingredients:
-                RecipeIngredient.objects.create(
-                    recipe=instance,
-                    ingredient=ing_data['ingredient'],
-                    amount=ing_data['amount']
-                )
+            self._save_tags_and_ingredients(instance, tags, ingredients)
+
         return instance
