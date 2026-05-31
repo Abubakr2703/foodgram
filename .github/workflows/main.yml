@@ -30,17 +30,11 @@ jobs:
           pip install flake8 flake8-isort isort
           pip install -r backend/requirements.txt
       - name: Lint with flake8 (PEP8)
-        env:
-          POSTGRES_USER: foodgram_user
-          POSTGRES_PASSWORD: foodgram_password
-          POSTGRES_DB: foodgram
-          DB_HOST: 127.0.0.1
-          DB_PORT: 5432
         run: |
-          flake8 backend/
+          flake8 backend/foodgram/
       - name: Check isort
         run: |
-          isort --check-only backend/
+          isort --check-only backend/foodgram/
       - name: Run backend tests
         env:
           POSTGRES_USER: foodgram_user
@@ -49,7 +43,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
         run: |
-          cd backend/
+          cd backend/foodgram/
           python manage.py test
 
   tests_frontend:
@@ -112,7 +106,6 @@ jobs:
   build_nginx:
     name: Build and push nginx image
     runs-on: ubuntu-latest
-    needs: tests_backend   # опционально, но можно оставить
     steps:
       - uses: actions/checkout@v3
       - name: Set up Docker Buildx
@@ -125,7 +118,7 @@ jobs:
       - name: Build and push nginx
         uses: docker/build-push-action@v4
         with:
-          context: ./infra/                 # ← исправлено: папка называется infra
+          context: ./infra/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_nginx:latest
 
