@@ -19,37 +19,55 @@ Foodgram — это современный продуктовый помощни
 - GitHub Actions (CI/CD)
 - Nginx
 
-### Установка
+## Установка и запуск локально
+
+### 1. Клонируйте репозиторий
 ```bash
-git clone https://github.com/abubakr2703/foodgram
+git clone https://github.com/abubakr2703/foodgram.git
 cd foodgram
 ```
-
-### Переменные окружения
-
-Создайте файл `.env` в корне проекта
-
-```bash
+### Создайте файл .env в корне проекта и наполните его данными
 POSTGRES_DB=foodgram
 POSTGRES_USER=foodgram_user
 POSTGRES_PASSWORD=ваш_пароль
 DB_HOST=db
 DB_PORT=5432
-```
 
-### Запуск через Docker
+### Запустите контейнеры
 ```bash
 cd infra
 docker compose up -d
+```
+### Выполните миграции и соберите статику
+```bash
 docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py collectstatic --noinput
+```
+
+### Создайте суперпользователя (по желанию)
+```bash
 docker compose exec backend python manage.py createsuperuser
 ```
-Приложение будет доступно по адресу: http://localhost
+    После этого приложение будет доступно по адресу: http://localhost
+
+### API
+Документация API
+После запуска проекта спецификация API доступна по адресу:
+http://localhost/api/docs/
 
 ## Деплой на сервер
-проект будет доступе по IP - 81.26.179.232
-админка будет доступна по http://81.26.179.232/admin/
-логин и пароль:
-login: abubakralirzaev69@gmail.com
-password: 270376Abu
+Проект настроен на автоматический деплой при пуше в ветку main через GitHub Actions.
+После успешного выполнения workflow приложение доступно по адресу:
+
+- IP: 81.26.179.232
+
+## Админка Django
+URL: http://81.26.179.232/admin/ (или http://belazzer.servebeer.com/admin/)
+
+ - Логин: abubakralirzaev69@gmail.com
+
+- Пароль: 270376Abu
+
+> В админке используется поле Email вместо имени пользователя (кастомная модель).
+
+
