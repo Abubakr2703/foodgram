@@ -7,7 +7,13 @@ SECRET_KEY = "django-insecure-5@&dk!)(@e^jml!ei2laa_o3x&*+=x1mx5w&5xbuvpv*yt3y*t
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['belazzer.servebeer.com', 'localhost', '127.0.0.1', '81.26.179.232', 'backend']
+ALLOWED_HOSTS = [
+    "belazzer.servebeer.com",
+    "localhost",
+    "127.0.0.1",
+    "81.26.179.232",
+    "backend",
+]
 
 
 # Application definition
@@ -58,23 +64,22 @@ TEMPLATES = [
 WSGI_APPLICATION = "foodgram.wsgi.application"
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://81.26.179.232:9001',
-    'http://localhost:9001',
-    'http://127.0.0.1:9001',
+    "http://81.26.179.232:9001",
+    "http://localhost:9001",
+    "http://127.0.0.1:9001",
 ]
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django'),
-        'USER': os.getenv('POSTGRES_USER', 'django'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "django"),
+        "USER": os.getenv("POSTGRES_USER", "django"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "PORT": os.getenv("DB_PORT", 5432),
     }
 }
 
@@ -112,24 +117,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = '/app/static'
+STATIC_URL = "static/"
+STATIC_ROOT = "/app/static"
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "media"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
     ),
-    'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPagination',
-    'PAGE_SIZE': 6,
+    "DEFAULT_PAGINATION_CLASS": "api.pagination.CustomPagination",
+    "PAGE_SIZE": 6,
 }
-DJOSER = {
-    'LOGIN_FIELD': 'email'
-}
+DJOSER = {"LOGIN_FIELD": "email"}
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
