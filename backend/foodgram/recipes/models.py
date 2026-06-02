@@ -1,9 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
-from .constants import (IMAGE_UPLOAD_PATH, MAX_MEASUREMENT_LENGTH, NAME_LENGTH,
-                        SLUG_MAX_LEGTH)
+from .constants import (
+    IMAGE_UPLOAD_PATH,
+    MAX_MEASUREMENT_LENGTH,
+    NAME_LENGTH,
+    SLUG_MAX_LEGTH,
+)
 
 User = get_user_model()
 
@@ -53,8 +58,12 @@ class Recipe(models.Model):
         verbose_name="Время приготовления",
         help_text="Время приготовления блюда (в минутах).",
     )
-    tags = models.ManyToManyField(Tag,
-                                  verbose_name="Теги", related_name="recipes")
+    created = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="Дата создания"
+    )
+    tags = models.ManyToManyField(Tag, verbose_name="Теги",
+                                  related_name="recipes")
     ingredients = models.ManyToManyField(
         Ingredient, through="RecipeIngredient", related_name="recipes"
     )
@@ -130,8 +139,7 @@ class ShoppingCart(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name="favorites")
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorites"

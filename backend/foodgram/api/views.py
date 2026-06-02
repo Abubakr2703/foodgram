@@ -1,18 +1,31 @@
 from api.filters import RecipeFilter
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Subscription, Tag)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Subscription,
+    Tag,
+)
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import User
 
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (IngredientSerializer, RecipeSerializer,
-                          RecipeShortSerializer, RecipeWriteSerializer,
-                          SubscribeCreateSerializer, SubscriptionSerializer,
-                          TagSerializer, UserProfileSerializer)
+from .serializers import (
+    IngredientSerializer,
+    RecipeSerializer,
+    RecipeShortSerializer,
+    RecipeWriteSerializer,
+    SubscribeCreateSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+    UserProfileSerializer,
+)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -48,7 +61,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
         if request.method == "POST":
             _, created = model.objects.get_or_create(
-                user=request.user, recipe=recipe)
+                user=request.user,
+                recipe=recipe)
             if not created:
                 return Response(
                     {"detail": "Рецепт уже добавлен"},
@@ -59,8 +73,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 context=self.get_serializer_context())
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == "DELETE":
-            deleted, _ = model.objects.filter(
-                user=request.user, recipe=recipe).delete()
+            deleted, _ = model.objects.filter(user=request.user,
+                                              recipe=recipe).delete()
             if not deleted:
                 return Response(
                     {"detail": "Рецепт не найден"},

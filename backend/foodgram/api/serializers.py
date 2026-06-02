@@ -1,7 +1,14 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Subscription, Tag)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Subscription,
+    Tag,
+)
 from rest_framework import serializers
 from users.models import User
 
@@ -53,6 +60,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "image",
             "author",
             "cooking_time",
+            "created",
             "tags",
             "ingredients",
             "is_favorited",
@@ -134,6 +142,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         limit = self.context.get("recipes_limit", 3)
+        try:
+            limit = int(limit)
+        except (TypeError, ValueError):
+            limit = 3
         recipes = obj.recipes.all()[:limit]
         serializer = RecipeShortSerializer(recipes,
                                            many=True, context=self.context)
@@ -157,9 +169,8 @@ class AvatarSerializer(serializers.ModelSerializer):
 
 
 class IngredientAmountSerializer(serializers.Serializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all(), source="ingredient"
-    )
+    ingredient = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(min_value=1)
 
 
