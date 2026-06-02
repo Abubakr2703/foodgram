@@ -27,6 +27,7 @@ from .serializers import (
     SubscriptionSerializer,
     TagSerializer,
     UserProfileSerializer,
+    AvatarSerializer,
 )
 
 
@@ -206,4 +207,28 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
                 {"detail": "Вы не подписаны"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        methods=['put'],
+        url_path='me/avatar',
+        permission_classes=[permissions.IsAuthenticated])
+    def update_avatar(self, request):
+        """Добавление или обновление аватара текущего пользователя."""
+        user = request.user
+        serializer = AvatarSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'avatar': serializer.data['avatar']},
+                        status=status.HTTP_200_OK)
+
+    @update_avatar.mapping.delete
+    def delete_avatar(self, request):
+        """Удаление аватара текущего пользователя."""
+        user = request.user
+        if user.avatar:
+            user.avatar.delete()
+            user.avatar = None
+            user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
