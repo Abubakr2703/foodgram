@@ -10,6 +10,8 @@ from recipes.models import (
     Subscription,
     Tag,
 )
+from djoser.serializers import UserCreateSerializer
+
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -136,6 +138,15 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = UserCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            UserProfileSerializer(user, context={'request': request}).data,
+            status=status.HTTP_201_CREATED
+        )
 
     @action(
         detail=False,

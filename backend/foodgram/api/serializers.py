@@ -169,8 +169,7 @@ class AvatarSerializer(serializers.ModelSerializer):
 
 
 class IngredientAmountSerializer(serializers.Serializer):
-    ingredient = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all())
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(min_value=1)
 
 
@@ -178,7 +177,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(many=True,
                                               queryset=Tag.objects.all())
-    ingredients = IngredientAmountSerializer(many=True)
+    ingredients = IngredientAmountSerializer(many=True, write_only=True)
 
     class Meta:
         model = Recipe
@@ -191,7 +190,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         ingredient_objs = [
             RecipeIngredient(
                 recipe=recipe,
-                ingredient=ing_data["ingredient"],
+                ingredient=ing_data["id"],
                 amount=ing_data["amount"],
             )
             for ing_data in ingredients
@@ -211,15 +210,16 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
+        current_tags = list(instance.tags.all())
 
         if "tags" in validated_data:
             tags = validated_data.pop("tags")
             instance.tags.set(tags)
+            current_tags = tags
 
         if "ingredients" in validated_data:
             ingredients = validated_data.pop("ingredients")
-
             instance.recipe_ingredients.all().delete()
-            self._save_tags_and_ingredients(instance, tags, ingredients)
-
+            self._save_tags_and_ingredients(instance,
+                                            current_tags, ingredients)
         return instance
