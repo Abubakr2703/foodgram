@@ -129,8 +129,9 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "api.pagination.CustomPagination",
-    "PAGE_SIZE": 6,
+    "PAGE_SIZE": 10,
 }
+
 DJOSER = {"LOGIN_FIELD": "email"}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
