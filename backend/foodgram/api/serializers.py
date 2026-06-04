@@ -28,11 +28,15 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    ingredient = IngredientSerializer()
+    id = serializers.ReadOnlyField(source="ingredient.id")
+    name = serializers.ReadOnlyField(source="ingredient.name")
+    measurement_unit = serializers.ReadOnlyField(
+        source="ingredient.measurement_unit")
+    amount = serializers.IntegerField()
 
     class Meta:
         model = RecipeIngredient
-        fields = ("id", "amount", "ingredient")
+        fields = ("id", "name", "measurement_unit", "amount")
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -223,3 +227,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                                             current_tags, ingredients)
 
         return instance
+
+    def to_representation(self, instance):
+            return RecipeSerializer(instance, context=self.context).data
