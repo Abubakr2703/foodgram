@@ -156,12 +156,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
-    author = UserProfileSerializer(read_only=True)
-
-    class Meta:
-        model = Subscription
-        fields = ("id", "author")
+class SubscriptionSerializer(UserProfileSerializer):
+    class Meta(UserProfileSerializer.Meta):
+        pass
 
 
 class AvatarSerializer(serializers.ModelSerializer):
@@ -229,4 +226,4 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-            return RecipeSerializer(instance, context=self.context).data
+        return RecipeSerializer(instance, context=self.context).data

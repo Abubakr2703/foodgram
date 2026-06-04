@@ -154,29 +154,26 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path="me",
-        permission_classes=[permissions.IsAuthenticated],
-    )
+    @action(detail=False,
+            methods=["get"],
+            url_path="me", permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
-        """Возвращает профиль текущего пользователя"""
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
 
-    @action(
-        detail=False, methods=["get"],
-        permission_classes=[permissions.IsAuthenticated]
-    )
+    @action(detail=False,
+            methods=["get"], permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
-        queryset = Subscription.objects.filter(user=request.user)
-        page = self.paginate_queryset(queryset.order_by("id"))
+        authors = User.objects.filter(subscribers__user=request.user)
+        page = self.paginate_queryset(authors)
         limit = request.query_params.get("recipes_limit", 3)
         serializer = SubscriptionSerializer(
-            page or queryset,
+            page or authors,
             many=True,
-            context={"request": request, "recipes_limit": limit},
+            context={
+                "request": request,
+                "recipes_limit": limit
+            }
         )
         return (
             self.get_paginated_response(serializer.data)
@@ -185,33 +182,28 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
     @action(
-        detail=True, methods=["post"],
-        permission_classes=[permissions.IsAuthenticated]
-    )
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAuthenticated])
     def subscribe(self, request, pk=None):
-        """Подписаться на пользователя"""
         author = self.get_object()
-        serializer = SubscribeCreateSerializer(
-            data={"author": author.id}, context={"request": request}
-        )
+        serializer = SubscribeCreateSerializer(data={"author": author.id},
+                                               context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(
-            UserProfileSerializer(author, context={"request": request}).data,
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(UserProfileSerializer(
+            author,
+            context={"request": request}).data,
+            status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, pk=None):
         author = self.get_object()
-        deleted, _ = Subscription.objects.filter(
-            user=request.user, author=author
-        ).delete()
+        deleted, _ = Subscription.objects.filter(user=request.user,
+                                                 author=author).delete()
         if not deleted:
-            return Response(
-                {"detail": "Вы не подписаны"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"detail": "Вы не подписаны"},
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -220,7 +212,6 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         url_path='me/avatar',
         permission_classes=[permissions.IsAuthenticated])
     def update_avatar(self, request):
-        """Добавление или обновление аватара текущего пользователя."""
         user = request.user
         serializer = AvatarSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -230,7 +221,6 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     @update_avatar.mapping.delete
     def delete_avatar(self, request):
-        """Удаление аватара текущего пользователя."""
         user = request.user
         if user.avatar:
             user.avatar.delete()
