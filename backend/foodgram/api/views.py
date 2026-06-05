@@ -29,6 +29,7 @@ from .serializers import (
     UserProfileSerializer,
     AvatarSerializer,
 )
+from recipes.utils import encode_base62
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -109,7 +110,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], url_path="get-link")
     def get_link(self, request, pk=None):
         recipe = self.get_object()
-        short_link = request.build_absolute_uri(f"/recipes/{recipe.id}/")
+        hash_code = encode_base62(recipe.id)
+        short_link = request.build_absolute_uri(f"/s/{hash_code}/")
         return Response({"short-link": short_link})
 
     @action(
