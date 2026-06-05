@@ -62,7 +62,7 @@ http://localhost/api/docs/
 - IP: 81.26.179.232
 
 ## Админка Django
-URL: http://81.26.179.232/admin/ (или http://belazzer.servebeer.com/admin/)
+URL: http://81.26.179.232/admin/
 
  - Логин: abubakralirzaev69@gmail.com
 
