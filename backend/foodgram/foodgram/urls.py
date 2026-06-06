@@ -10,7 +10,7 @@ def redirect_to_recipe(request, hash_code):
     try:
         recipe_id = decode_base62(hash_code)
         recipe = Recipe.objects.get(id=recipe_id)
-        return redirect(f"/recipes/{recipe.id}/")
+        return redirect(f"/recipes/{recipe.id}")
     except (ValueError, Recipe.DoesNotExist):
         raise Http404("Рецепт не найден")
 

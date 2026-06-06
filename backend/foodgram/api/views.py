@@ -111,7 +111,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_link(self, request, pk=None):
         recipe = self.get_object()
         hash_code = encode_base62(recipe.id)
-        short_link = request.build_absolute_uri(f"/s/{hash_code}/")
+        short_link = request.build_absolute_uri(f"/s/{hash_code}")
         return Response({"short-link": short_link})
 
     @action(
