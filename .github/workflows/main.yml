@@ -57,11 +57,11 @@ jobs:
       - name: Install frontend dependencies
         run: |
           cd frontend/
-          npm ci
+          npm ci --legacy-peer-deps
       - name: Run frontend tests
         run: |
           cd frontend/
-          npm test -- --watchAll=false
+          npm test -- --watchAll=false --legacy-peer-deps
 
   build_backend:
     name: Build and push backend image
