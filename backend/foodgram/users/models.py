@@ -1,12 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .constants import (
-    FIRST_NAME_LENGTH,
-    LAST_NAME_LENGTH,
-    MAX_LENGTH_USERNAME,
-    UPLOAD_TO_AVATARS,
-)
+from .constants import (FIRST_NAME_LENGTH, LAST_NAME_LENGTH,
+                        MAX_LENGTH_USERNAME, UPLOAD_TO_AVATARS)
 
 
 class User(AbstractUser):

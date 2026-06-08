@@ -3,12 +3,8 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from .constants import (
-    IMAGE_UPLOAD_PATH,
-    MAX_MEASUREMENT_LENGTH,
-    NAME_LENGTH,
-    SLUG_MAX_LEGTH,
-)
+from .constants import (IMAGE_UPLOAD_PATH, MAX_MEASUREMENT_LENGTH, NAME_LENGTH,
+                        SLUG_MAX_LEGTH)
 
 User = get_user_model()
 

@@ -1,35 +1,21 @@
 from api.filters import RecipeFilter
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    ShoppingCart,
-    Subscription,
-    Tag,
-)
 from djoser.serializers import UserCreateSerializer
-
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscription, Tag)
+from recipes.utils import encode_base62
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import User
 
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (
-    IngredientSerializer,
-    RecipeSerializer,
-    RecipeShortSerializer,
-    RecipeWriteSerializer,
-    SubscribeCreateSerializer,
-    SubscriptionSerializer,
-    TagSerializer,
-    UserProfileSerializer,
-    AvatarSerializer,
-)
-from recipes.utils import encode_base62
+from .serializers import (AvatarSerializer, IngredientSerializer,
+                          RecipeSerializer, RecipeShortSerializer,
+                          RecipeWriteSerializer, SubscribeCreateSerializer,
+                          SubscriptionSerializer, TagSerializer,
+                          UserProfileSerializer)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.urls import include, path
-from django.shortcuts import redirect
 from django.http import Http404
+from django.shortcuts import redirect
+from django.urls import include, path
 from recipes.models import Recipe
 from recipes.utils import decode_base62
 
